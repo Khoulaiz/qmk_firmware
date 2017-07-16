@@ -100,6 +100,11 @@ void rgblight_increase_val(void);
 void rgblight_decrease_val(void);
 void rgblight_sethsv(uint16_t hue, uint8_t sat, uint8_t val);
 void rgblight_setrgb(uint8_t r, uint8_t g, uint8_t b);
+void rgblight_setTmpSolid(uint8_t r, uint8_t g, uint8_t b);
+void rgblight_resumeFromTmpSolid(void);
+void rgblight_saveTmpConfig(void);
+void rgblight_restoreFromTmpConfig(void);
+void rgblight_mode_next(void);
 
 uint32_t eeconfig_read_rgblight(void);
 void eeconfig_update_rgblight(uint32_t val);

@@ -28,7 +28,9 @@ enum custom_keycodes {
     RGB_008000,
     RGB_FFA500,
     RGB_800080,
-    RGB_FF0000
+    RGB_FF0000,
+    RGB_000000,
+    RGB_FFFFFF
 };
 
 // NOTE: Cells marked with ACCESS must remain transparent, they're the keys that actually get to that layer
@@ -37,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /* Keymap 0: Basic layer
  *
  * ,--------------------------------------------------.           ,--------------------------------------------------.
- * | ESC    |   1  |   2  |   3  |   4  |   5  |  =   |           |  -   |   6  |   7  |   8  |   9  |   0  |  ESC   |
+ * | LT5/ESC|   1  |   2  |   3  |   4  |   5  |  =   |           |  -   |   6  |   7  |   8  |   9  |   0  |  ESC   |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
  * | DEL    |   '  |   ,  |   .  |   P  |   Y  |  Ü   |           |  ß   |   F  |   G  |   C  |   R  |   L  |   \    |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
@@ -59,11 +61,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Otherwise, it needs KC_*
 [0] = KEYMAP(  // layer 0 : default
         // left hand
-                KC_ESCAPE,     KC_1,         KC_2,        KC_3,         KC_4,        KC_5,       KC_EQUAL,
-                KC_DELETE,     KC_QUOTE,     KC_COMMA,    KC_E,         KC_R,        KC_T,       M(UMLAUT_UE),
-                              ALL_T(KC_TAB), LT(1,KC_A),   ALT_T(KC_O), CTL_T(KC_E),  GUI_T(KC_U), SFT_T(KC_I),
-                KC_LSHIFT,     KC_SCOLON,    KC_Q,        KC_J,         KC_K,        KC_X,       M(UMLAUT_AE),
-                TG(2),         KC_GRAVE,     KC_SLASH,    MEH_T(KC_NO), MO(2),
+                LT(5,KC_ESCAPE), KC_1,          KC_2,        KC_3,         KC_4,        KC_5,        KC_EQUAL,
+                KC_DELETE,       KC_QUOTE,      KC_COMMA,    KC_DOT,       KC_P,        KC_Y,        M(UMLAUT_UE),
+                                 ALL_T(KC_TAB), LT(1,KC_A),  ALT_T(KC_O),  CTL_T(KC_E), GUI_T(KC_U), SFT_T(KC_I),
+                KC_LSHIFT,       KC_SCOLON,     KC_Q,        KC_J,         KC_K,        KC_X,        M(UMLAUT_AE),
+                TG(2),           KC_GRAVE,      KC_SLASH,    MEH_T(KC_NO), MO(2),
                                                                               LT(4,KC_APPLICATION),KC_LGUI,
                                                                                         KC_HOME,
                                                                               LT(3,KC_TAB),KC_BSPACE,KC_END,
@@ -198,8 +200,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                                                                       KC_TRNS,
                                                                     KC_TRNS, KC_TRNS, KC_TRNS,
         // right hand
-             KC_TRNS, KC_TRNS,       KC_TRNS,     KC_TRNS,    KC_TRNS,     KC_TRNS,    RGB_TOG,
-             KC_TRNS, KC_TRNS,       KC_PGUP,     KC_UP,      KC_HOME,     KC_TRNS,    RGB_VAD,
+             KC_TRNS, KC_TRNS,       KC_TRNS,     KC_TRNS,    KC_TRNS,     KC_TRNS,    KC_TRNS,
+             KC_TRNS, KC_TRNS,       KC_PGUP,     KC_UP,      KC_HOME,     KC_TRNS,    KC_TRNS,
                       LCTL(KC_A),    KC_LEFT,     KC_DOWN,    KC_RIGHT,    LCTL(KC_E), KC_TRNS,
              KC_TRNS, KC_TRNS,       KC_PGDOWN,   KC_DOWN,    KC_END,      KC_TRNS,    KC_TRNS,
                                      KC_TRNS,     KC_TRNS,    KC_TRNS,     KC_TRNS,    KC_TRNS,
@@ -246,6 +248,49 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                       KC_TRNS, KC_WWW_BACK,   KC_WWW_HOME,    KC_WWW_FORWARD, KC_TRNS, M(EMAIL_2),
                       KC_TRNS,        KC_TRNS, KC_TRNS,       KC_TRNS,        KC_TRNS,        KC_TRNS, M(EMAIL_3),
                                       KC_TRNS,       KC_TRNS,        KC_TRNS,        KC_TRNS, KC_TRNS,
+             KC_TRNS, KC_TRNS,
+             KC_TRNS,
+             KC_TRNS, KC_TRNS, KC_TRNS
+),
+/* Keymap 5: RGB Light
+ *
+ * ,--------------------------------------------------.           ,--------------------------------------------------.
+ * | ACCESS |      |      |      |      |      |      |           | White| Blue |Green |Yellow|Purple| Red  | Black  |
+ * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
+ * |        |      |      |      |      |      |      |           |      |      |Anim+ |Brght+| Hue+ |      |        |
+ * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
+ * |        |      |      |      |      |      |------|           |------|      |Anim- |Brght-| Hue- |      |        |
+ * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
+ * |        |      |      |      |      |      |      |           |      |      |      |On/Off|      |      |        |
+ * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
+ *   |      |      |      |      |      |                                       |      |      |      |      |      |
+ *   `----------------------------------'                                       `----------------------------------'
+ *                                        ,-------------.       ,-------------.
+ *                                        |      |      |       |      |      |
+ *                                 ,------|------|------|       |------+------+------.
+ *                                 |      |      |      |       |      |      |      |
+ *                                 |      |      |------|       |------|      |      |
+ *                                 |      |      |      |       |      |      |      |
+ *                                 `--------------------'       `--------------------'
+ */
+// RGB Light
+//
+[5] = KEYMAP(
+        // left hand
+             KC_TRNS, KC_TRNS,       KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,
+             KC_TRNS, KC_TRNS,       KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,
+             KC_TRNS, KC_TRNS,       KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,
+             KC_TRNS, KC_TRNS,       KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,
+             KC_TRNS, KC_TRNS,       KC_TRNS,      KC_TRNS,      KC_TRNS,
+                                                                             KC_TRNS, KC_TRNS,
+                                                                                      KC_TRNS,
+                                                                    KC_TRNS, KC_TRNS, KC_TRNS,
+        // right hand
+             RGB_FFFFFF, RGB_0000FF,    RGB_008000,   RGB_FFA500,   RGB_800080,   RGB_FF0000,   RGB_000000,
+             KC_TRNS,    KC_TRNS,       RGB_MOD,      RGB_VAI,      RGB_HUI,      KC_TRNS,      KC_TRNS,
+                         KC_TRNS,       RGB_SLD,      RGB_VAD,      RGB_HUD,      KC_TRNS,      KC_TRNS,
+             KC_TRNS,    KC_TRNS,       KC_TRNS,      RGB_TOG,      KC_TRNS,      KC_TRNS,      KC_TRNS,
+                                        KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,      KC_TRNS,
              KC_TRNS, KC_TRNS,
              KC_TRNS,
              KC_TRNS, KC_TRNS, KC_TRNS
@@ -351,13 +396,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
-    
+#ifdef RGBANIMATIONS
+    case RGB_MOD:
+        if (record->event.pressed) {
+            rgblight_mode_next();
+        }
+        return false;
+        break;
+#endif
     case RGB_0000FF:
         if (record->event.pressed) {
 #ifdef RGBLIGHT_ENABLE
             rgblight_enable();
+            rgblight_sethsv(240,255,255);//blue
             rgblight_mode(1);
-            rgblight_setrgb(0x00,0x00,0xff);
 #endif
         }
         return false;
@@ -367,8 +419,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
 #ifdef RGBLIGHT_ENABLE
             rgblight_enable();
+            rgblight_sethsv(120,255,128);//green
             rgblight_mode(1);
-            rgblight_setrgb(0x00,0x80,0x00);
 #endif
         }
         return false;
@@ -378,8 +430,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
 #ifdef RGBLIGHT_ENABLE
             rgblight_enable();
+            rgblight_sethsv(40,255,255);//orange
             rgblight_mode(1);
-            rgblight_setrgb(0xff,0xa5,0x00);
 #endif
         }
         return false;
@@ -389,8 +441,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
 #ifdef RGBLIGHT_ENABLE
             rgblight_enable();
+            rgblight_sethsv(300,255,128);//purple
             rgblight_mode(1);
-            rgblight_setrgb(0x80,0x00,0x80);
 #endif
         }
         return false;
@@ -400,13 +452,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
 #ifdef RGBLIGHT_ENABLE
             rgblight_enable();
+            rgblight_sethsv(0,255,255);//red
             rgblight_mode(1);
-            rgblight_setrgb(0xff,0x00,0x00);
 #endif
         }
         return false;
         break;
     
+    case RGB_000000:
+        if (record->event.pressed) {
+#ifdef RGBLIGHT_ENABLE
+            rgblight_enable();
+            rgblight_sethsv(0,0,0);//black
+            rgblight_mode(1);
+#endif
+        }
+        return false;
+        break;
+
+    case RGB_FFFFFF:
+        if (record->event.pressed) {
+#ifdef RGBLIGHT_ENABLE
+            rgblight_enable();
+            rgblight_sethsv(0,0,255);//white
+            rgblight_mode(1);
+#endif
+        }
+        return false;
+        break;
+
     }
     return true;
 }
@@ -419,36 +493,31 @@ void matrix_scan_user(void) {
 
 #ifdef RGBLIGHT_ENABLE
     if (layer != prev_layer) {
-        if(layer != 0) {
-            rgblight_enable();
-        }
-        rgblight_mode(1);
         switch (layer) {
-        case 0:
-            rgblight_setrgb(0x00,0x00,0x00);//dark
-            break;
         case 1:
-            rgblight_setrgb(0xff,0x00,0x00);//red
+            rgblight_setTmpSolid(0xff,0x00,0x00);//red
             break;
         case 2:
-            rgblight_setrgb(0x00,0x80,0x00);//dark green
+            rgblight_setTmpSolid(0x00,0x80,0x00);//green
             break;
         case 3:
-            rgblight_setrgb(0x00,0x00,0xff);//blue
+            rgblight_setTmpSolid(0x00,0x00,0xff);//blue
             break;
         case 4:
-            rgblight_setrgb(0xff,0xa5,0x00);//orange
-            break;
-        case 5:
-            rgblight_setrgb(0x80,0x00,0x80);//purple
+            rgblight_setTmpSolid(0xff,0xa5,0x00);//orange
             break;
         case 6:
-            rgblight_setrgb(0x00,0xFF,0x00);//green
+            rgblight_setTmpSolid(0x80,0x00,0x80);//purple
             break;
         case 7:
-            rgblight_setrgb(0xFF,0xFF,0x00);//yellow
+            rgblight_setTmpSolid(0xFF,0xFF,0x00);//yellow
             break;
         default:
+        case 0:
+        case 5:
+            if(prev_layer != 0 && prev_layer != 5) {
+                rgblight_resumeFromTmpSolid();
+            }
             break;
         }
         prev_layer = layer;
@@ -495,7 +564,4 @@ void matrix_scan_user(void) {
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
     prev_layer = 0;
-    rgblight_enable();
-    rgblight_mode(1);
-    rgblight_setrgb(0x00,0x00,0x00);//dark
 };

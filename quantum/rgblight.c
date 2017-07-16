@@ -150,6 +150,7 @@ void rgblight_init(void) {
   if (rgblight_config.enable) {
     rgblight_mode(rgblight_config.mode);
   }
+  rgblight_saveTmpConfig();
 }
 
 void rgblight_update_dword(uint32_t dword) {
@@ -197,6 +198,13 @@ void rgblight_step_reverse(void) {
   rgblight_mode(mode);
 }
 
+void rgblight_mode_next(void) {
+    rgblight_config.mode = rgblight_config.mode + 1;
+    if(rgblight_config.mode > RGBLIGHT_MODES) {
+        rgblight_config.mode = 1;
+    }
+}
+
 void rgblight_mode(uint8_t mode) {
   if (!rgblight_config.enable) {
     return;
@@ -232,6 +240,38 @@ void rgblight_mode(uint8_t mode) {
     #endif
   }
   rgblight_sethsv(rgblight_config.hue, rgblight_config.sat, rgblight_config.val);
+}
+
+static rgblight_config_t prev_config;
+
+void rgblight_saveTmpConfig(void) {
+    prev_config.raw = rgblight_config.raw;
+}
+
+void rgblight_restoreFromTmpConfig(void) {
+    rgblight_config.raw = prev_config.raw;
+}
+
+void rgblight_setTmpSolid(uint8_t r, uint8_t g, uint8_t b) {
+    rgblight_saveTmpConfig();
+    rgblight_config.enable = 1;
+    rgblight_config.mode = 1;
+    rgblight_timer_disable();
+    rgblight_setrgb(r,g,b);
+}
+
+void rgblight_resumeFromTmpSolid(void) {
+    rgblight_restoreFromTmpConfig();
+    if (rgblight_config.enable == 1) {
+        if (rgblight_config.mode >= 2 && rgblight_config.mode <= 24) {
+            rgblight_timer_enable();
+        }
+        rgblight_sethsv_noeeprom(rgblight_config.hue, rgblight_config.sat, rgblight_config.val);
+    } else {
+        _delay_ms(50);
+        rgblight_set();
+    }
+    rgblight_task();
 }
 
 void rgblight_toggle(void) {
@@ -299,7 +339,7 @@ void rgblight_increase_val(void) {
   rgblight_sethsv(rgblight_config.hue, rgblight_config.sat, val);
 }
 void rgblight_decrease_val(void) {
-  uint8_t val;
+    uint8_t val;
   if (rgblight_config.val - RGBLIGHT_VAL_STEP < 0) {
     val = 0;
   } else {
